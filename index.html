@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ledgerly — Personal & Shared Finance Tracker</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CSS Link -->
+  <link rel="stylesheet" href="index.css">
+  
+  <!-- Theme script (Prevent Flash of Unstyled Content) -->
+  <meta name="color-scheme" content="light dark">
+  <script>
+    {
+      const colorScheme = localStorage.getItem("color-scheme") || 'dark'; // Default to dark for premium feel
+      document.documentElement.setAttribute('data-theme', colorScheme);
+      if (colorScheme) {
+        document.querySelector('meta[name="color-scheme"]').content = colorScheme;
+      }
+    }
+  </script>
+</head>
+<body>
+  <!-- AUTHENTICATION PAGE OVERLAY -->
+  <div id="auth-container" class="auth-container">
+    <div class="auth-box">
+      <div class="auth-header">
+        <div class="logo">
+          <div class="logo-icon">
+            <i data-lucide="wallet-cards"></i>
+          </div>
+          <span class="logo-text">Ledgerly</span>
+        </div>
+        <p class="auth-subtitle">Personal & Shared Finance Tracker</p>
+      </div>
+
+      <!-- Auth Tabs -->
+      <div class="auth-tabs">
+        <button id="tab-login" class="auth-tab-btn active">Log In</button>
+        <button id="tab-signup" class="auth-tab-btn">Sign Up</button>
+      </div>
+
+      <!-- Auth Form -->
+      <form id="auth-form" class="auth-form">
+        <div class="form-group" id="group-username" style="display: none;">
+          <label for="auth-username">Full Name</label>
+          <input type="text" id="auth-username" class="form-control" placeholder="E.g., Rahul Sharma">
+        </div>
+        
+        <div class="form-group">
+          <label for="auth-email">Email Address</label>
+          <input type="email" id="auth-email" class="form-control" placeholder="name@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="auth-password">Password</label>
+          <input type="password" id="auth-password" class="form-control" placeholder="Min. 6 characters" required>
+        </div>
+
+        <button type="submit" id="btn-auth-submit" class="btn btn-primary btn-full">Log In</button>
+
+        <div class="auth-divider">
+          <span>Or Continue With</span>
+        </div>
+
+        <div class="social-login-grid">
+          <button type="button" class="btn btn-outline social-btn" id="btn-social-google">
+            <svg class="social-icon" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.136 4.114-3.51 0-6.36-2.85-6.36-6.36s2.85-6.36 6.36-6.36c1.63 0 3.117.62 4.258 1.636l3.187-3.187C19.26 2.23 15.975 1 12.24 1 5.92 1 1 5.92 1 12s4.92 11 11.24 11c6.58 0 11.23-4.63 11.23-11.24 0-.7-.08-1.35-.23-1.975H12.24Z"/></svg>
+            <span>Google</span>
+          </button>
+          <button type="button" class="btn btn-outline social-btn" id="btn-social-github">
+            <svg class="social-icon" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            <span>GitHub</span>
+          </button>
+        </div>
+
+        <button type="button" id="btn-auth-guest" class="btn btn-outline btn-full" style="margin-top: var(--space-xs);">
+          <i data-lucide="user"></i>
+          <span>Continue as Guest</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- App Container -->
+  <div class="app-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">
+            <i data-lucide="wallet-cards"></i>
+          </div>
+          <span class="logo-text">Ledgerly</span>
+        </div>
+      </div>
+      
+      <!-- User Account Widget -->
+      <div class="user-account-widget" id="user-account-widget">
+        <div class="user-avatar" id="sidebar-user-avatar">GU</div>
+        <div class="user-details">
+          <span class="user-name" id="sidebar-user-name">Guest User</span>
+          <span class="user-email text-secondary" id="sidebar-user-email">Local Storage Mode</span>
+        </div>
+        <button id="btn-logout" class="icon-btn-small text-danger" title="Log Out">
+          <i data-lucide="log-out"></i>
+        </button>
+      </div>
+      
+      <!-- Profile Widget -->
+      <div class="profile-widget">
+        <div class="profile-info">
+          <div class="profile-avatar" id="active-profile-avatar">DF</div>
+          <div class="profile-details">
+            <span class="profile-label">Current Profile</span>
+            <span class="profile-name" id="active-profile-name">Default</span>
+          </div>
+        </div>
+        <div class="profile-selector-container">
+          <select id="profile-selector" title="Select Profile">
+            <!-- Options dynamically populated by JS -->
+          </select>
+          <button id="btn-add-profile-inline" class="icon-btn-small" title="Create New Profile">
+            <i data-lucide="plus-circle"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Nav Links -->
+      <nav class="sidebar-nav">
+        <button class="nav-link active" data-tab="dashboard">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-link" data-tab="transactions">
+          <i data-lucide="arrow-right-left"></i>
+          <span>Transactions</span>
+        </button>
+        <button class="nav-link" data-tab="loans">
+          <i data-lucide="users"></i>
+          <span>Lend & Borrow</span>
+        </button>
+        <button class="nav-link" data-tab="analytics">
+          <i data-lucide="pie-chart"></i>
+          <span>Analytics</span>
+        </button>
+        <button class="nav-link" data-tab="settings">
+          <i data-lucide="settings"></i>
+          <span>Settings</span>
+        </button>
+      </nav>
+      
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <button id="theme-toggle" class="theme-toggle-btn">
+          <i class="theme-icon-light" data-lucide="sun"></i>
+          <i class="theme-icon-dark" data-lucide="moon"></i>
+          <span id="theme-text">Dark Mode</span>
+        </button>
+        <div class="footer-meta">
+          <span>v1.0.0 • Local Storage</span>
+        </div>
+      </div>
+    </aside>
+    
+    <!-- Main Content Area -->
+    <main class="app-main">
+      <!-- Top Action Bar -->
+      <header class="app-header">
+        <div class="header-title-container">
+          <h1 id="page-title">Dashboard Overview</h1>
+          <p id="page-subtitle" class="text-secondary">Summary of your financial status</p>
+        </div>
+        <div class="header-actions">
+          <!-- Mobile Specific Controls -->
+          <div class="header-profile-selector-container mobile-only" id="mobile-profile-switcher-wrapper">
+            <i data-lucide="circle-user" class="profile-icon"></i>
+            <select id="header-profile-selector" title="Select Profile">
+              <!-- Dynamically populated by JS -->
+            </select>
+          </div>
+          <button id="mobile-theme-toggle" class="icon-btn-small header-mobile-btn" title="Toggle Theme">
+            <i class="theme-icon-light" data-lucide="sun"></i>
+            <i class="theme-icon-dark" data-lucide="moon"></i>
+          </button>
+          <button id="mobile-settings" class="icon-btn-small header-mobile-btn" title="Settings">
+            <i data-lucide="settings"></i>
+          </button>
+          <button id="mobile-logout" class="icon-btn-small text-danger header-mobile-btn" title="Log Out">
+            <i data-lucide="log-out"></i>
+          </button>
+          
+          <!-- Quick profile info or date -->
+          <div class="header-date">
+            <i data-lucide="calendar"></i>
+            <span id="current-date-display">August 2026</span>
+          </div>
+          <button id="btn-new-transaction" class="btn btn-primary">
+            <i data-lucide="plus"></i>
+            <span>Add Transaction</span>
+          </button>
+        </div>
+      </header>
+      
+      <!-- Dashboard Tab Content -->
+      <section id="tab-dashboard" class="tab-content active">
+        <!-- KPI Cards Grid -->
+        <div class="kpi-grid">
+          <!-- Balance Card -->
+          <div class="kpi-card card-accent-blue">
+            <div class="kpi-icon"><i data-lucide="wallet"></i></div>
+            <div class="kpi-data">
+              <span class="kpi-label">Available Balance</span>
+              <h3 class="kpi-value" id="kpi-balance">₹0.00</h3>
+              <span class="kpi-subtext" id="kpi-balance-sub">Cash + Assets - Liabilities</span>
+            </div>
+          </div>
+          <!-- Income Card -->
+          <div class="kpi-card card-accent-green">
+            <div class="kpi-icon"><i data-lucide="trending-up"></i></div>
+            <div class="kpi-data">
+              <span class="kpi-label">Monthly Income</span>
+              <h3 class="kpi-value text-success" id="kpi-income">₹0.00</h3>
+              <span class="kpi-subtext" id="kpi-income-sub">0 transactions</span>
+            </div>
+          </div>
+          <!-- Expense Card -->
+          <div class="kpi-card card-accent-red">
+            <div class="kpi-icon"><i data-lucide="trending-down"></i></div>
+            <div class="kpi-data">
+              <span class="kpi-label">Monthly Expenses</span>
+              <h3 class="kpi-value text-danger" id="kpi-expense">₹0.00</h3>
+              <span class="kpi-subtext" id="kpi-expense-sub">0 transactions</span>
+            </div>
+          </div>
+          <!-- Lend/Borrow Card -->
+          <div class="kpi-card card-accent-yellow">
+            <div class="kpi-icon"><i data-lucide="split"></i></div>
+            <div class="kpi-data">
+              <span class="kpi-label">Lend / Borrow (Net)</span>
+              <h3 class="kpi-value" id="kpi-loans">₹0.00</h3>
+              <span class="kpi-subtext" id="kpi-loans-sub">Receivable vs Payable</span>
+            </div>
+          </div>
+          <!-- Donations Card -->
+          <div class="kpi-card card-accent-purple">
+            <div class="kpi-icon"><i data-lucide="heart"></i></div>
+            <div class="kpi-data">
+              <span class="kpi-label">Donated Amount</span>
+              <h3 class="kpi-value text-purple" id="kpi-donations">₹0.00</h3>
+              <span class="kpi-subtext" id="kpi-donations-sub">Charity and goodwill</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Quick Visual Analytics -->
+        <div class="dashboard-grid">
+          <!-- Charts Section -->
+          <div class="card chart-panel">
+            <div class="card-header">
+              <h3 class="card-title">Cashflow Trend</h3>
+              <div class="card-actions">
+                <span class="badge">Monthly</span>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="dashboard-trend-chart"></canvas>
+            </div>
+          </div>
+          
+          <!-- Accounts & Wallets Balance Panel -->
+          <div class="card accounts-panel">
+            <div class="card-header">
+              <h3 class="card-title">Accounts & Wallets</h3>
+              <div class="card-actions">
+                <span class="badge">Balances</span>
+              </div>
+            </div>
+            <div class="card-body accounts-list" id="dashboard-accounts-list">
+              <!-- Dynamically populated by JS -->
+            </div>
+          </div>
+          
+          <div class="card chart-panel">
+            <div class="card-header">
+              <h3 class="card-title">Expense Distribution</h3>
+              <div class="card-actions">
+                <span class="badge">By Category</span>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="dashboard-category-chart"></canvas>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Recent Transactions Panel -->
+        <div class="card table-panel">
+          <div class="card-header">
+            <h3 class="card-title">Recent Activity</h3>
+            <button class="btn btn-outline btn-small" id="btn-view-all-transactions">View All</button>
+          </div>
+          <div class="table-responsive">
+            <table class="transaction-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Profile</th>
+                  <th>Type</th>
+                  <th>Category</th>
+                  <th>Description / Entity</th>
+                  <th class="text-right">Amount</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="recent-transactions-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Transactions Tab Content -->
+      <section id="tab-transactions" class="tab-content">
+        <!-- Filter Controls -->
+        <div class="card filter-card">
+          <div class="filter-grid">
+            <div class="filter-item">
+              <label for="filter-profile">Profile</label>
+              <select id="filter-profile" class="form-control">
+                <option value="all">All Profiles</option>
+                <!-- Dynamically populated -->
+              </select>
+            </div>
+            <div class="filter-item">
+              <label for="filter-type">Transaction Type</label>
+              <select id="filter-type" class="form-control">
+                <option value="all">All Types</option>
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+                <option value="purchase">Purchase</option>
+                <option value="lend">Lended (Receivable)</option>
+                <option value="borrow">Borrowed (Payable)</option>
+                <option value="donation">Donation</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label for="filter-month">Month</label>
+              <input type="month" id="filter-month" class="form-control">
+            </div>
+            <div class="filter-item filter-search-col">
+              <label for="filter-search">Search Description / Entity</label>
+              <div class="search-input-wrapper">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" id="filter-search" placeholder="Search by details..." class="form-control">
+              </div>
+            </div>
+            <div class="filter-item filter-buttons-col">
+              <button id="btn-clear-filters" class="btn btn-outline" title="Reset Filters">
+                <i data-lucide="refresh-cw"></i>
+                <span>Reset</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Full Transactions Table -->
+        <div class="card table-panel">
+          <div class="table-responsive">
+            <table class="transaction-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Profile</th>
+                  <th>Type</th>
+                  <th>Category</th>
+                  <th>Description / Entity</th>
+                  <th class="text-right">Amount</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="full-transactions-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination-container" id="pagination-controls">
+            <!-- Dynamically populated pagination if needed, or simple indicators -->
+          </div>
+        </div>
+      </section>
+      
+      <!-- Lend & Borrow Tab Content -->
+      <section id="tab-loans" class="tab-content">
+        <div class="loans-summary-grid">
+          <!-- Lended Total -->
+          <div class="kpi-card card-accent-green">
+            <div class="kpi-icon"><i data-lucide="arrow-up-right"></i></div>
+            <div class="kpi-data">
+              <span class="kpi-label">Total Lended (Receivables)</span>
+              <h3 class="kpi-value text-success" id="loan-receivables-total">₹0.00</h3>
+              <span class="kpi-subtext">Money people owe you</span>
+            </div>
+          </div>
+          <!-- Borrowed Total -->
+          <div class="kpi-card card-accent-red">
+            <div class="kpi-icon"><i data-lucide="arrow-down-left"></i></div>
+            <div class="kpi-data">
+              <span class="kpi-label">Total Borrowed (Payables)</span>
+              <h3 class="kpi-value text-danger" id="loan-payables-total">₹0.00</h3>
+              <span class="kpi-subtext">Money you owe others</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="loans-grid">
+          <!-- Left: Active Receivables list -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Who Owes You (Receivables)</h3>
+            </div>
+            <div class="table-responsive">
+              <table class="loan-entity-table">
+                <thead>
+                  <tr>
+                    <th>Entity / Person</th>
+                    <th>Profile</th>
+                    <th class="text-right">Net Amount</th>
+                    <th class="text-center">Settle</th>
+                  </tr>
+                </thead>
+                <tbody id="receivables-tbody">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <!-- Right: Active Payables list -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Who You Owe (Payables)</h3>
+            </div>
+            <div class="table-responsive">
+              <table class="loan-entity-table">
+                <thead>
+                  <tr>
+                    <th>Entity / Person</th>
+                    <th>Profile</th>
+                    <th class="text-right">Net Amount</th>
+                    <th class="text-center">Settle</th>
+                  </tr>
+                </thead>
+                <tbody id="payables-tbody">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Analytics Tab Content -->
+      <section id="tab-analytics" class="tab-content">
+        <div class="analytics-layout">
+          <!-- Top Row: Big Charts -->
+          <div class="card chart-panel large-chart">
+            <div class="card-header">
+              <h3 class="card-title">Monthly Cashflow Breakdown</h3>
+              <div class="card-actions">
+                <select id="analytics-year-filter" class="form-control form-control-small" title="Select Year">
+                  <option value="2026">2026</option>
+                  <!-- Populate more options dynamically if needed -->
+                </select>
+              </div>
+            </div>
+            <div class="chart-container-large">
+              <canvas id="analytics-monthly-chart"></canvas>
+            </div>
+          </div>
+          
+          <div class="analytics-subgrid">
+            <!-- Left: Category Spend -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Expenses & Purchases by Category</h3>
+              </div>
+              <div class="chart-container-medium">
+                <canvas id="analytics-category-chart"></canvas>
+              </div>
+            </div>
+            <!-- Right: Statistics Details -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Financial Insights</h3>
+              </div>
+              <div class="stats-list" id="analytics-insights-container">
+                <!-- Dynamically populated statements -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Settings & Profiles Tab Content -->
+      <section id="tab-settings" class="tab-content">
+        <div class="settings-grid">
+          <!-- Profile Configuration -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Manage Profiles</h3>
+            </div>
+            <div class="card-body">
+              <p class="text-secondary margin-bottom">Create distinct profiles for family members, friends, or specific accounts (e.g. personal, business) to keep data separate.</p>
+              
+              <form id="form-create-profile" class="settings-form">
+                <div class="form-group flex-row">
+                  <input type="text" id="new-profile-name" placeholder="Profile name (e.g., Mom, Freelance)" required class="form-control">
+                  <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+              </form>
+              
+              <div class="profile-list-container">
+                <h4 class="list-heading">Existing Profiles</h4>
+                <ul class="profile-settings-list" id="profile-settings-list">
+                  <!-- Dynamically populated with delete actions -->
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Data Backup & Operations -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Data Backup & Utilities</h3>
+            </div>
+            <div class="card-body">
+              <p class="text-secondary margin-bottom">Since Ledgerly saves all records inside your web browser storage, you should regularly back up your data to avoid loss when clearing cache.</p>
+              
+              <div class="backup-actions">
+                <button id="btn-export-data" class="btn btn-outline btn-full">
+                  <i data-lucide="download"></i>
+                  <span>Export Backup (JSON)</span>
+                </button>
+                
+                <div class="import-wrapper">
+                  <label for="import-file-input" class="btn btn-outline btn-full import-label">
+                    <i data-lucide="upload"></i>
+                    <span>Import Backup (JSON)</span>
+                  </label>
+                  <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                </div>
+              </div>
+              
+              <hr class="settings-divider">
+              
+              <div class="danger-zone">
+                <h4 class="text-danger font-medium margin-bottom">Danger Zone</h4>
+                <p class="text-secondary margin-bottom-small">Deleting data is permanent and cannot be undone unless you have a JSON backup file.</p>
+                <button id="btn-clear-database" class="btn btn-danger btn-full">
+                  <i data-lucide="trash-2"></i>
+                  <span>Clear All Data</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <!-- TRANSACTION DIALOG MODAL (NATIVE <dialog>) -->
+  <dialog id="transaction-modal" class="custom-modal">
+    <div class="modal-wrapper">
+      <div class="modal-header">
+        <h3 id="modal-title">Add Transaction</h3>
+        <button id="btn-modal-close" class="modal-close-btn" aria-label="Close dialog">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      
+      <form id="transaction-form" class="modal-body">
+        <input type="hidden" id="edit-transaction-id" value="">
+        
+        <!-- Profile & Account Selection -->
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="modal-profile">Profile</label>
+            <select id="modal-profile" name="profile" class="form-control" required>
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="modal-account">Account / Wallet</label>
+            <select id="modal-account" name="account" class="form-control" required>
+              <option value="Bank">Bank Account</option>
+              <option value="Cash">Cash Wallet</option>
+              <option value="Investments">Investments</option>
+              <option value="Reserved">Reserved / Savings</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Transaction Type Selection Grid -->
+        <div class="form-group">
+          <label>Transaction Type</label>
+          <div class="transaction-type-selector">
+            <label class="type-btn active" data-type="expense">
+              <input type="radio" name="type" value="expense" checked required>
+              <i data-lucide="trending-down"></i>
+              <span>Expense</span>
+            </label>
+            <label class="type-btn" data-type="income">
+              <input type="radio" name="type" value="income">
+              <i data-lucide="trending-up"></i>
+              <span>Income</span>
+            </label>
+            <label class="type-btn" data-type="purchase">
+              <input type="radio" name="type" value="purchase">
+              <i data-lucide="shopping-bag"></i>
+              <span>Purchase</span>
+            </label>
+            <label class="type-btn" data-type="lend">
+              <input type="radio" name="type" value="lend">
+              <i data-lucide="arrow-up-right"></i>
+              <span>Lend</span>
+            </label>
+            <label class="type-btn" data-type="borrow">
+              <input type="radio" name="type" value="borrow">
+              <i data-lucide="arrow-down-left"></i>
+              <span>Borrow</span>
+            </label>
+            <label class="type-btn" data-type="donation">
+              <input type="radio" name="type" value="donation">
+              <i data-lucide="heart"></i>
+              <span>Donation</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- Amount and Date -->
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="modal-amount">Amount</label>
+            <div class="amount-input-wrapper">
+              <span class="currency-symbol">₹</span>
+              <input type="number" id="modal-amount" name="amount" placeholder="0.00" step="0.01" min="0.01" class="form-control" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="modal-date">Date</label>
+            <input type="date" id="modal-date" name="date" class="form-control" required>
+          </div>
+        </div>
+        
+        <!-- Category Dropdown (Conditional options populated dynamically) -->
+        <div class="form-group">
+          <label for="modal-category">Category</label>
+          <div class="category-input-wrapper">
+            <select id="modal-category" name="category" class="form-control" required>
+              <!-- Populated dynamically based on Type selection -->
+            </select>
+            <input type="text" id="modal-custom-category" placeholder="Or enter custom category" class="form-control display-none">
+            <button type="button" id="btn-toggle-custom-category" class="btn btn-outline btn-small-fixed">Custom</button>
+          </div>
+        </div>
+        
+        <!-- Entity / Store / Counterparty -->
+        <div class="form-group">
+          <label for="modal-counterparty" id="modal-counterparty-label">Store / Merchant</label>
+          <input type="text" id="modal-counterparty" name="counterparty" placeholder="Name of place or person" class="form-control" required>
+        </div>
+        
+        <!-- Description -->
+        <div class="form-group">
+          <label for="modal-description">Description / Notes</label>
+          <input type="text" id="modal-description" name="description" placeholder="E.g., Weekly groceries, Lent to help with rent..." class="form-control">
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" id="btn-modal-cancel" class="btn btn-outline">Cancel</button>
+          <button type="submit" id="btn-modal-submit" class="btn btn-primary">Save Transaction</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+  
+  <!-- TOAST NOTIFICATION SYSTEM -->
+  <div id="toast-container" class="toast-container"></div>
+  
+  <!-- Mobile Bottom Navigation -->
+  <nav class="mobile-bottom-nav">
+    <button class="mobile-nav-link active" data-tab="dashboard">
+      <i data-lucide="layout-dashboard"></i>
+      <span>Overview</span>
+    </button>
+    <button class="mobile-nav-link" data-tab="transactions">
+      <i data-lucide="arrow-right-left"></i>
+      <span>Ledger</span>
+    </button>
+    
+    <!-- Central Prominent Add Transaction Button -->
+    <button class="mobile-nav-add-btn" id="mobile-nav-add-btn" aria-label="Add Transaction">
+      <i data-lucide="plus"></i>
+    </button>
+    
+    <button class="mobile-nav-link" data-tab="loans">
+      <i data-lucide="users"></i>
+      <span>Lend/Borrow</span>
+    </button>
+    <button class="mobile-nav-link" data-tab="analytics">
+      <i data-lucide="pie-chart"></i>
+      <span>Analytics</span>
+    </button>
+  </nav>
+  
+  <!-- CDNs for Icons and Charts -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- App JS -->
+  <script src="app.js"></script>
+</body>
+</html>
